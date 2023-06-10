@@ -18,8 +18,11 @@ public class UserServiceImpl implements UserService {
         // call validator call to check that all fields are present or not
         // e.g UserValidator
         // if validation is true then only send object to save inside db
-        userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.OK).body("User Account has been created successfully..");
+        if (!user.getUserEmail().isEmpty() && !isUserAlreadyExists(user.getUserEmail())) {
+            userRepository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body("User Account has been created successfully..");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User Alrady exists..");
     }
 
     public ResponseEntity<String> loginUser(String userEmail, String password) {
@@ -27,5 +30,10 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.status(HttpStatus.OK).body("Login Successfull..");
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Email or password");
+    }
+
+    @Override
+    public boolean isUserAlreadyExists(String userEmail) {
+        return userRepository.findByUserEmail(userEmail).isPresent();
     }
 }
