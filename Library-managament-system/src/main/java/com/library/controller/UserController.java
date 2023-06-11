@@ -1,7 +1,7 @@
-package com.library.com.Library.managament.system.controller;
+package com.library.controller;
 
-import com.library.com.Library.managament.system.entity.User;
-import com.library.com.Library.managament.system.service.UserService;
+import com.library.entity.User;
+import com.library.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

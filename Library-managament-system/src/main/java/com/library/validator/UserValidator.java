@@ -1,4 +1,4 @@
-package com.library.com.Library.managament.system.validator;
+package com.library.validator;
 
 import org.springframework.stereotype.Component;
 

@@ -1,7 +1,7 @@
-package com.library.com.Library.managament.system.service;
+package com.library.service;
 
-import com.library.com.Library.managament.system.entity.User;
-import com.library.com.Library.managament.system.repository.UserRepository;
+import com.library.entity.User;
+import com.library.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
-package com.library.com.Library.managament.system.service;
+package com.library.service;
 
-import com.library.com.Library.managament.system.entity.Book;
+import com.library.entity.Book;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

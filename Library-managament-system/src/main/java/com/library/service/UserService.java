@@ -1,9 +1,7 @@
-package com.library.com.Library.managament.system.service;
+package com.library.service;
 
-import com.library.com.Library.managament.system.entity.User;
+import com.library.entity.User;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Optional;
 
 public interface UserService {
     ResponseEntity<String> crateUser(User user);

@@ -11,8 +11,8 @@
 	<groupId>com.library.com</groupId>
 	<artifactId>Library-managament-system</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Library-managament-system</name>
-	<description>Library managament system</description>
+	<name>Library-management-system</name>
+	<description>Library management system</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -51,7 +51,7 @@
 				<configuration>
 					<excludes>
 						<exclude>
-							<groupId>org.projectlombok</groupId>
+							<groupId>org.project-lombok</groupId>
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>

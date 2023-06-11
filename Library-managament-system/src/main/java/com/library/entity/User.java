@@ -1,12 +1,10 @@
-package com.library.com.Library.managament.system.entity;
+package com.library.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Random;
 
 @Entity
 @Data
