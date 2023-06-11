@@ -13,4 +13,7 @@ public interface BookService {
     ResponseEntity<String> saveAllNewBooks(List<Book> books);
 
     Optional<Book> getBookByBookName(String bookName);
+    Optional<Book> getByBookNameAndAuthor(String bookName,String author);
+
+    Optional<Book> getBookByBookId(Long bookId);
 }
