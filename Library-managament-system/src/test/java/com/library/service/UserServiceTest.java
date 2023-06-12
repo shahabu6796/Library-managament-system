@@ -1,41 +1,72 @@
 package com.library.service;
 
-import com.library.entity.User;
-import com.library.repository.UserRepository;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.*;
-@SpringBootTest
+import com.library.entity.User;
+import com.library.repository.UserRepository;
 
-class UserServiceTest {
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest
+{
 
     @Mock
     private UserRepository userRepository;
 
-    @Autowired
-    @Mock
-    private UserService userService;
+    @InjectMocks
+    private UserServiceImpl userService;
+
+    @BeforeEach
+    void setUp()
+    {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
-    void testCrateUser() {
+    @DisplayName("create user")
+    void testCrateUser()
+    {
+        String email = "test";
+        User user = User.builder().userEmail(email).build();
+        // Mocking the isUserAlreadyExists method to return true
+        Mockito.when(userService.isUserAlreadyExists(email)).thenReturn(Optional.empty());
+        var responseEntity = userService.crateUser(user);
+        // Verify that the user is saved and response status is OK
+        Mockito.verify(userRepository).save(user);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("User Account has been created successfully..", responseEntity.getBody());
     }
 
     @Test
     @DisplayName("login")
-    void testLoginUser() {
+    void testLoginUser()
+    {
         String email = "test";
         String password = "test1";
         User user = User.builder().userEmail(email).password(password).build();
-        Mockito.when(userRepository.save(user)).thenReturn(user);
-        // object is being saved in db which shoul not happen
-        userService.crateUser(user);
+        Mockito.when(userRepository.findByUserEmailAndPassword(email, password)).thenReturn(user);
         ResponseEntity<String> response = userService.loginUser(email, password);
-        assertEquals(HttpStatus.OK,response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void testIsUserAlreadyExists()
+    {
+        Mockito.when(userRepository.findByUserEmail("shahab@123")).thenReturn(Optional.empty());
+        var isExists = userService.isUserAlreadyExists("shahab@123");
+        assertEquals(false,isExists.isPresent());
     }
 }
