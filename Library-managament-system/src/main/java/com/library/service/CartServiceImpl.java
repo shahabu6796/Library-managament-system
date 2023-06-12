@@ -1,43 +1,92 @@
 package com.library.service;
 
-import com.library.entity.Book;
-import com.library.entity.Cart;
-import com.library.repository.CartRepository;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.library.entity.Book;
+import com.library.entity.Cart;
+import com.library.entity.User;
+import com.library.repository.BookRepository;
+import com.library.repository.CartRepository;
+import com.library.repository.UserRepository;
 
 @Service
-public class CartServiceImpl implements CartService {
+public class CartServiceImpl implements CartService
+{
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private BookRepository bookRepository;
     @Autowired
     private CartRepository cartRepository;
-    @Autowired
-    private BookService bookService;
 
     @Override
-    public ResponseEntity<String> addItem(Cart cart) {
-        //set current date of system
-        cart.setAllotDate(LocalDateTime.now());
-        cartRepository.save(cart);
-        return ResponseEntity.status(HttpStatus.OK).body("Book added successfully..");
+    public void addToCart(Long userId, Long bookId)
+    {
+        User user = userRepository.findById(userId).orElse(null);
+        Book book = bookRepository.findById(bookId).orElse(null);
+
+        if (user != null && book != null && book.getUser() == null)
+        {
+            Cart cartItem = new Cart();
+            cartItem.setUser(user);
+            cartItem.setBook(book);
+            cartItem.setBorrowedAt(LocalDateTime.now());
+            cartRepository.save(cartItem);
+        }
     }
 
     @Override
-    public ResponseEntity<String> removeItem(long bookId, long userId) {
-//        cartRepository.deleteById(new CartKey(userId, bookId));
-        return ResponseEntity.status(HttpStatus.OK).body("Book removed successfully..");
+    public void removeFromCart(Long cartId)
+    {
+        cartRepository.deleteById(cartId);
     }
 
     @Override
-    public List<Book> getCartById(Long cartId) {
-        Optional<Cart> cart = cartRepository.findById(cartId);
-        Optional<Book> book = bookService.getBookByBookId(cart.get().getBookId());
-        return List.of(book.get());
+    public void checkoutCart(Long cartId)
+    {
+        Cart cartItem = cartRepository.findById(cartId).orElse(null);
+
+        if (cartItem != null && cartItem.getReturnedAt() == null)
+        {
+            cartItem.setReturnedAt(LocalDateTime.now());
+            cartRepository.save(cartItem);
+        }
+    }
+
+    @Override
+    public void returnBook(Long cartId)
+    {
+        Cart cartItem = cartRepository.findById(cartId).orElse(null);
+
+        if (cartItem != null)
+        {
+            cartItem.setReturnedAt(LocalDateTime.now());
+            cartRepository.save(cartItem);
+        }
+    }
+
+    @Override
+    public BigDecimal calculateLateFine(Long cartId)
+    {
+        Cart cartItem = cartRepository.findById(cartId).orElse(null);
+
+        if (cartItem != null && cartItem.getReturnedAt() != null)
+        {
+            LocalDateTime dueDate = cartItem.getBorrowedAt().plusDays(7);
+            LocalDateTime returnedDate = cartItem.getReturnedAt();
+            if (returnedDate.isAfter(dueDate))
+            {
+                long daysLate = ChronoUnit.DAYS.between(dueDate, returnedDate);
+                BigDecimal lateFine = BigDecimal.valueOf(daysLate).multiply(BigDecimal.valueOf(5)); // 5 repuees per day late
+                return lateFine;
+            }
+        }
+
+        return BigDecimal.ZERO;
     }
 }
